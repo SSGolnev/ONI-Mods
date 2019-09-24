@@ -1,4 +1,5 @@
-﻿using TUNING;
+﻿using Harmony;
+using TUNING;
 using UnityEngine;
 
 namespace InfiniteSourceSink
@@ -16,7 +17,7 @@ namespace InfiniteSourceSink
                 id: Id,
                 width: 1,
                 height: 2,
-                anim: "infinite_liquid_sink",
+                anim: "miniwaterpump_kanim",
                 hitpoints: BUILDINGS.HITPOINTS.TIER2,
                 construction_time: BUILDINGS.CONSTRUCTION_TIME_SECONDS.TIER4,
                 construction_mass: BUILDINGS.CONSTRUCTION_MASS_KG.TIER4,
@@ -64,6 +65,20 @@ namespace InfiniteSourceSink
 
             go.AddOrGetDef<OperationalController.Def>();
             BuildingTemplates.DoPostConfigure(go);
+        }
+    }
+
+    [HarmonyPatch(typeof(BuildingComplete))]
+    [HarmonyPatch("OnSpawn")]
+    public static class LiquidSinkBuildingComplete_OnSpawn_Patch
+    {
+        public static void Postfix(BuildingComplete __instance)
+        {
+            if (__instance.name == "LiquidSinkComplete")
+            {
+                var kAnimBase = __instance.GetComponent<KAnimControllerBase>();
+                kAnimBase.TintColour = new Color32(255, 0, 0, 255);
+            }
         }
     }
 }
